@@ -13,10 +13,13 @@ var BAR_WIDTH = 40;
 var BAR_MAX_HEIGHT = 150;
 var STATS_GAP = 235;
 
+/*
+изменить алгоритм так, чтобы он мог принимать пустые массивы
+*/
 var getMaxElement = function (arr) {
   var maxElement = arr[0];
 
-  for (var i = 0; i < arr.length; i++) {
+  for (var i = 1; i < arr.length; i++) {
     if (arr[i] > maxElement) {
       maxElement = arr[i];
     }
@@ -41,11 +44,14 @@ var renderCongrats = function (ctx) {
 };
 
 var renderChart = function (ctx, names, times) {
+
   var maxTime = getMaxElement(times);
 
   for (var i = 0; i < names.length; i++) {
-    // ctx.fillStyle = (names[i] === 'Вы') ? 'rgba(255, 0, 0, 1)' : 'hsl(240, 50%, ' + Math.random() * 100 + '%)';
-    ctx.fillStyle = (names[i] === 'Вы') ? 'rgba(255, 0, 0, 1)' : 'hsl(240, ' + Math.random() * 100 + '%' + ', 50%';
+
+    ctx.fillStyle = names[i] === 'Вы'
+      ? 'rgba(255, 0, 0, 1)'
+      : 'hsl(240, ' + Math.random() * 100 + '%' + ', 50%';
 
     ctx.fillRect(TEXT_X + (BAR_WIDTH + BAR_GAP) * i, BAR_Y, BAR_WIDTH, ((-BAR_MAX_HEIGHT * times[i]) / maxTime) + GAP);
 
@@ -53,11 +59,17 @@ var renderChart = function (ctx, names, times) {
     ctx.fillText(Math.floor(times[i]), TEXT_X + (BAR_WIDTH + BAR_GAP) * i, ((-BAR_MAX_HEIGHT * times[i]) / maxTime) + STATS_GAP);
     ctx.fillText(names[i], TEXT_X + (BAR_WIDTH + BAR_GAP) * i, TEXT_Y);
   }
+
 };
 
 window.renderStatistics = function (ctx, names, times) {
   renderScoreCard(ctx);
   renderScoreCard(ctx);
   renderCongrats(ctx);
-  renderChart(ctx, names, times);
+  renderChart(ctx, names, times.sort(function (a, b) {
+    return b - a;
+  }));
+  /* в renderChart times.sort() сортирует по входящему времени список результатов
+меняя a и b местами - можно поменять порядок сортировки.
+  */
 };
